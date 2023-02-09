@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\View;
 use Intervention\Image\Facades\Image;
+use App\Events\OurExampleEventBarbara;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -46,6 +47,8 @@ class UserController extends Controller
             $request->session()->regenerate();
             // return 'You are a person';
             //redirect with the method with, adding following message (name of message,"message info )
+            //calling an event, import class
+            event(new OurExampleEventBarbara(['username'=>auth()->user()->username, 'action'=>'login']));
             return redirect('/')->with('success', "you succefully sign in");
         }else{
             return redirect('/')->with('failed', 'you dont have the right credentials');
@@ -64,8 +67,11 @@ class UserController extends Controller
     }
     //function to logout
     public function logout(){
+          //calling an event, import class
+        event(new OurExampleEventBarbara(['username'=>auth()->user()->username, 'action'=>'logout']));
         //call logout method
         auth()->logout();
+      
         // return 'You are now logged out';
         return redirect('/')->with('success', "you are log out");
 
@@ -104,6 +110,7 @@ class UserController extends Controller
         //steps in case i want to work with username instead of id
         // return view('profile-posts', ['username' => $user->username,'posts'=>$user->posts()->latest()->get(),'postCount'=> $user->posts()->count(), 'avatar' =>$user->avatar]);
     }
+
 
     //Profile Followers
     public function profileFollowers(User $usuario) {
@@ -151,6 +158,27 @@ class UserController extends Controller
         return back()->with('success', 'old image delete it');
 
     }
+
+    //Profile SPA
+    public function profileRaw(User $usuario) {        
+        // we need to return json
+        //globally view function, method of render to return a string
+        return response()->json(['theHTML'=> view('profile-posts-only',['posts'=>$usuario->posts()->latest()->get()])->render(),'docTitle'=>$usuario->username ."'s Profile" ]);
+    }
+
+    
+    //Profile Followers SPA
+    public function profileFollowersRaw(User $usuario) {        
+        return response()->json(['theHTML'=>view('profile-followers-only', ['followers'=>$usuario->followers()->latest()->get()])->render(),'docTitle'=>$usuario->username ."'s Followers" ]);
+        
+                           
+    }
+    //Profile Following SPA
+    public function profileFollowingRaw(User $usuario) {
+        return response()->json(['theHTML'=>view('profile-following-only', ['following'=>$usuario->followingTheseUsers()->latest()->get()])->render(),'docTitle'=>'Who' . $usuario->username ."Follows" ]);      
+    }
+
+
         
    
 }

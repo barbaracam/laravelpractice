@@ -1,5 +1,7 @@
 <?php
 
+use App\Events\ChatMessage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -50,6 +52,12 @@ Route::get('/profile/{usuario:id}', [UserController::class, "profile"]);
 Route::get('/profile/{usuario:id}/followers', [UserController::class, "profileFollowers"]);
 Route::get('/profile/{usuario:id}/following', [UserController:: class, "profileFollowing"]);
 
+//profile related routes with js spa, 
+//can be done with id instead of username, check also the layout.blade with id or username
+Route::get('/profile/{usuario:id}/raw', [UserController::class, "profileRaw"]);
+Route::get('/profile/{usuario:id}/followers/raw', [UserController::class, "profileFollowersRaw"]);
+Route::get('/profile/{usuario:id}/following/raw', [UserController:: class, "profileFollowingRaw"]);
+
 // Route::get('/profile/{user:username}', [UserController::class, "profile"]);
 
 //follow relates routes
@@ -72,3 +80,18 @@ Route::post('/remove-follow/{user:id}',[FollowController::class, 'removeFollow']
 Route::get('/admin-only', function() {
     return "You are an Admin";
 })->middleware('can:visitAdminPages');
+
+//chat route
+Route::post('/send-chat-message', function(Request $request){
+$formFields = $request->validate([
+    'textvalue' => 'required'
+]);
+if(!trim(strip_tags($formFields['textvalue']))){
+    return response()->noContent(); 
+}
+
+//we are broadcasting a new instance of a chat message event to others
+ broadcast(new ChatMessage(['username'=>auth()->user()->username, 'textvalue'=> strip_tags($request->textvalue), 'avatar'=> auth()->user()->avatar]))->toOthers();
+return response()->noContent();
+
+})->middleware('MustBeLoggedIn');
