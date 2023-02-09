@@ -8,6 +8,14 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+
+    public function search($surprise){
+        //called aany varable using the post model and we can already access search and then get
+       $posts = Post::search($surprise)->get();
+       //explaining the system that we want also the id the avatar and the username, no only the post, we neeed those relationships too
+       $posts->load('user:id,username,avatar');
+       return $posts;
+    }
     //get request to get the post website
     public function showCreateForm(){
         // if(!auth()->check()) {

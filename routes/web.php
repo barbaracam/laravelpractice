@@ -41,11 +41,15 @@ Route::delete('/post/{post}', [PostController::class, "delete"])->middleware('ca
 //this is for edit
 Route::get('/post/{post}/edit', [PostController::class, "showEditForm"])->middleware('can:update,post');
 Route::put('/post/{post}', [PostController::class, "actuallyUpdate"])->middleware('can:update,post');
+Route::get('/search/{surprise}', [PostController::class, "search"]);
 
 
 //profile related routes, 
 //can be done with id instead of username, check also the layout.blade with id or username
 Route::get('/profile/{usuario:id}', [UserController::class, "profile"]);
+Route::get('/profile/{usuario:id}/followers', [UserController::class, "profileFollowers"]);
+Route::get('/profile/{usuario:id}/following', [UserController:: class, "profileFollowing"]);
+
 // Route::get('/profile/{user:username}', [UserController::class, "profile"]);
 
 //follow relates routes

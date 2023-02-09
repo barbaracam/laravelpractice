@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Follow;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\View;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 
@@ -55,7 +56,8 @@ class UserController extends Controller
     public function showCorrectHomepage(){
         //this method call check will provide true or false
         if(auth()->check()){
-            return view('homepage-feed');
+            //instance for the current model for the logged user, call the function from the user model, calling all post from the followers, paginate the number of post allow
+            return view('homepage-feed',['posts'=> auth()->user()->feedPosts()->latest()->paginate(2)]);
         }else {
             return view('homepage');
         }
@@ -69,8 +71,7 @@ class UserController extends Controller
 
     }
     //function for profile
-    //build the methaphore user and the 2 match the parameter router
-    public function profile(User $usuario) {
+    private function getSharedData($usuario){
         //set value if you are not login to 0
         $currentlyFollowing = 0;
         if(auth()->check()){
@@ -82,9 +83,39 @@ class UserController extends Controller
         //latest(0 come from the newest on top)
         //the last one in the array is to get the number of post by client
         //when i do with id
-        return view('profile-posts', ['username' => $usuario->username,'id'=> $usuario->id,'posts'=>$usuario->posts()->latest()->get(),'postCount'=> $usuario->posts()->count(), 'avatar' =>$usuario->avatar, 'currentlyFollowing' => $currentlyFollowing]);
+        //view has a static method so we can share, to access the blade template
+        View::share('sharedData',['username' => $usuario->username,'id'=> $usuario->id,'postCount'=> $usuario->posts()->count(), 'avatar' =>$usuario->avatar, 'currentlyFollowing' => $currentlyFollowing,
+        // followers() and followingTheseUsers() fuction come from user model
+        'followerCount'=> $usuario->followers()->count(), 'followingCount'=>$usuario->followingTheseUsers()->count() ]);
+
+    }
+
+    //build the methaphore user and the 2 match the parameter router
+    public function profile(User $usuario) {
+        //coment this cuz will go to the shaaredData function
+        // $currentlyFollowing = 0;
+        // if(auth()->check()){           
+        //     $currentlyFollowing = Follow::where([['user_id', '=', auth()->user()->id],['followeduser', '=', $usuario->id]])->count();
+        // }   
+        $this->getSharedData($usuario);     
+        //comment this cuz it looks like that before goes in the shared data function
+        // return view('profile-posts', ['username' => $usuario->username,'id'=> $usuario->id,'posts'=>$usuario->posts()->latest()->get(),'postCount'=> $usuario->posts()->count(), 'avatar' =>$usuario->avatar, 'currentlyFollowing' => $currentlyFollowing]);
+        return view('profile-posts', ['posts'=>$usuario->posts()->latest()->get()]);
         //steps in case i want to work with username instead of id
         // return view('profile-posts', ['username' => $user->username,'posts'=>$user->posts()->latest()->get(),'postCount'=> $user->posts()->count(), 'avatar' =>$user->avatar]);
+    }
+
+    //Profile Followers
+    public function profileFollowers(User $usuario) {
+        $this->getSharedData($usuario); 
+        //lets see the json
+        // return $usuario->followers()->latest()->get(); 
+        return view('profile-followers', ['followers'=>$usuario->followers()->latest()->get()]);                   
+    }
+    //Profile Following
+    public function profileFollowing(User $usuario) {
+        $this->getSharedData($usuario);  
+        return view('profile-following', ['following'=>$usuario->followingTheseUsers()->latest()->get()]);      
     }
 
     //Change Avatar    

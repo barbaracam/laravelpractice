@@ -1,4 +1,4 @@
-<x-layout>
+<x-layout :doctitle="$post->title">
     <div class="container py-md-5 container--narrow">
       <div class="d-flex justify-content-between">
         <h2>{{$post->title}}</h2>
@@ -17,9 +17,9 @@
 
       <p class="text-muted small mb-4">
         {{-- post in the avatar, because we can see the post form other people so we are not auth --}}
-        <a href="#"><img class="avatar-tiny" src="{{$post->user->avatar}}" /></a>
+        <a href="/profile/{{$post->user->id}}"><img class="avatar-tiny" src="{{$post->user->avatar}}" /></a>
         {{-- format the date with format() --}}
-        Posted by <a href="#">{{$post->user->username}}</a> on {{$post->created_at->format('n/j/Y')}}
+        Posted by <a href="/profile/{{$post->user->id}}">{{$post->user->username}}</a> on {{$post->created_at->format('n/j/Y')}}
       </p>
 
       <div class="body-content">
