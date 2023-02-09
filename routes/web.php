@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FollowController;
 // use App\Http\Controllers\ExampleController; practicing controller
 
 
@@ -25,19 +26,45 @@ Route::get('/', [UserController::class, "showCorrectHomepage"])->name('login');
 Route::post('/register', [UserController::class, "register"])->middleware('guest');
 Route::post('/login', [UserController::class, "login"])->middleware('guest');
 Route::post('/logout', [UserController::class, "logout"])->middleware('MustBeLoggedIn');
+Route::get('/manage-avatar', [UserController::class, "showAvatarForm"])->middleware('MustBeLoggedIn');
+Route::post('/manage-avatar', [UserController::class, "storeAvatar"])->middleware('MustBeLoggedIn');
 
-//blog controller
+
+//BLOG CONTROLLER
+//1.a - the word post in bracket need to match the name from the 2 paraments from the fuction on the controllers
+//1.b only will delete, if the user is allow to delete (can:delete, post..)
+//remember to change the file under the policies folder and the AuthServicesProvider as well
 Route::get('/create-post', [PostController::class, "showCreateForm"])->middleware('MustBeLoggedIn');
 Route::post('/create-post', [PostController::class, "storeNewPost"])->middleware('MustBeLoggedIn');
-//the post in bracket need to match the name from the 2 paraments from the fuction on the controllers
 Route::get('/post/{post}', [PostController::class, "viewSinglePost"]);
-//only will delete, if the user is allow to delete
 Route::delete('/post/{post}', [PostController::class, "delete"])->middleware('can:delete,post');
 //this is for edit
 Route::get('/post/{post}/edit', [PostController::class, "showEditForm"])->middleware('can:update,post');
 Route::put('/post/{post}', [PostController::class, "actuallyUpdate"])->middleware('can:update,post');
 
 
-
-//profile related routes, can be done with id instead of username, check also the layout.blade with id or username
+//profile related routes, 
+//can be done with id instead of username, check also the layout.blade with id or username
 Route::get('/profile/{usuario:id}', [UserController::class, "profile"]);
+// Route::get('/profile/{user:username}', [UserController::class, "profile"]);
+
+//follow relates routes
+Route::post('/create-follow/{user:id}',[FollowController::class, 'createFollow'])->middleware('MustBeLoggedIn');
+Route::post('/remove-follow/{user:id}',[FollowController::class, 'removeFollow'])->middleware('MustBeLoggedIn');
+
+
+//gates
+// (very similar to policy but a policy includes CRUD, gate simplier activities)
+
+//option1
+// Route::get('/admin-only', function() {
+//     if(Gate::allows('visitAdminPages')){
+//         return "Only admin are allow";
+//     }
+//     return "You cannot see this page";
+// });
+
+//option 2 gate with middleware
+Route::get('/admin-only', function() {
+    return "You are an Admin";
+})->middleware('can:visitAdminPages');

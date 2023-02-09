@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Follow;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -68,10 +71,55 @@ class UserController extends Controller
     //function for profile
     //build the methaphore user and the 2 match the parameter router
     public function profile(User $usuario) {
+        //set value if you are not login to 0
+        $currentlyFollowing = 0;
+        if(auth()->check()){
+           //lets check currently follow in order to delete, is true or false
+            $currentlyFollowing = Follow::where([['user_id', '=', auth()->user()->id],['followeduser', '=', $usuario->id]])->count();
+        }
         // this word posts() come from the user model, the function posts
         // return $usuario->posts()->get();
         //latest(0 come from the newest on top)
         //the last one in the array is to get the number of post by client
-        return view('profile-posts', ['username' => $usuario->username,'posts'=>$usuario->posts()->latest()->get(), 'postCount'=> $usuario->posts()->count()]);
+        //when i do with id
+        return view('profile-posts', ['username' => $usuario->username,'id'=> $usuario->id,'posts'=>$usuario->posts()->latest()->get(),'postCount'=> $usuario->posts()->count(), 'avatar' =>$usuario->avatar, 'currentlyFollowing' => $currentlyFollowing]);
+        //steps in case i want to work with username instead of id
+        // return view('profile-posts', ['username' => $user->username,'posts'=>$user->posts()->latest()->get(),'postCount'=> $user->posts()->count(), 'avatar' =>$user->avatar]);
     }
+
+    //Change Avatar    
+    public function showAvatarForm(){
+        return view('avatar-form'); 
+    }
+    public function storeAvatar(Request $request){
+        $request->validate([
+            'avatar' => 'required|image|max:3000'
+        ]);
+    //we check inside the request for a method call file, the file we named avatar, call method store
+    //it goes sotrage/app/public/avatars, the option below without package without resize
+    // $request->file('avatar')->store('public/avatars');
+
+    $user = auth()->user();
+    //uniqid _>randomly generate set of character for a uniqued id
+    $filename = $user->id .'_'. uniqid() . '.jpg';
+           
+    //after the package of intervention composer
+    //dont forget to import the classes
+        $imgData = Image::make($request->file('avatar'))->fit(120)->encode('jpg');
+        Storage::put('public/avatars/'. $filename, $imgData);
+        //delete old file database thats why we save
+        $oldAvatar = $user->avatar;
+        //now update the img database
+        $user->avatar = $filename;
+        $user->save();
+
+        if($oldAvatar != "/fallback-avatar.jpg"){
+            Storage::delete(str_replace("/storage/","public/",$oldAvatar));            
+        }
+
+        return back()->with('success', 'old image delete it');
+
+    }
+        
+   
 }

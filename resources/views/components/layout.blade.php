@@ -22,7 +22,7 @@
           <a href="#" class="text-white mr-2 header-search-icon" title="Search" data-toggle="tooltip" data-placement="bottom"><i class="fas fa-search"></i></a>
           <span class="text-white mr-2 header-chat-icon" title="Chat" data-toggle="tooltip" data-placement="bottom"><i class="fas fa-comment"></i></span>
           {{-- tutorial changed id to username/, im telling them to check the user table --}}
-          <a href="/profile/{{auth()->user()->id}}" class="mr-2"><img title="My Profile" data-toggle="tooltip" data-placement="bottom" style="width: 32px; height: 32px; border-radius: 16px" src="https://gravatar.com/avatar/f64fc44c03a8a7eb1d52502950879659?s=128" /></a>
+          <a href="/profile/{{auth()->user()->id}}" class="mr-2"><img title="My Profile" data-toggle="tooltip" data-placement="bottom" style="width: 32px; height: 32px; border-radius: 16px" src="{{auth()->user()->avatar}}" /></a>
           <a class="btn btn-sm btn-success mr-2" href="/create-post">Create Post</a>
           <form action="/logout" method="POST" class="d-inline">
             @csrf
@@ -67,7 +67,7 @@
     {{$slot}}
     <!-- footer begins -->
 <footer class="border-top text-center small text-muted py-3">
-    <p class="m-0">Copyright &copy; {{date('Y')}} <a href="/" class="text-muted">OurApp</a>. All rights reserved.</p>
+    <p class="m-0">Copyright &copy; {{date('Y')}} <a href="/" class="text-muted">LaravApp</a>. All rights reserved.</p>
   </footer>
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

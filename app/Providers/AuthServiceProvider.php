@@ -2,7 +2,8 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+//uncomment the gate below
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -26,10 +27,16 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @return void
      */
+
+     //we do a gate here
     public function boot()
     {
         $this->registerPolicies();
 
-        //
+        //define our personal gate
+        Gate::define('visitAdminPages', function($user){
+                return $user->isAdmin === 1;
+        });
+
     }
 }
