@@ -96,3 +96,6 @@ if(!trim(strip_tags($formFields['textvalue']))){
 return response()->noContent();
 
 })->middleware('MustBeLoggedIn');
+
+
+

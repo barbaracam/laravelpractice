@@ -42,6 +42,7 @@ class PostController extends Controller
         //dont forget importing the class
         $newPost = Post::create($incomingFields);
 
+        //create to send emails
         dispatch(new SendNewPostEmail(['sendTo'=>auth()->user()->email,'name'=>auth()->user()->username, 'title'=>$newPost->title]));
         
         //we create this later, after the email blade
@@ -93,6 +94,36 @@ class PostController extends Controller
         $post->update($incomingFields);      
         // back is to return last page
         return back()->with('success', 'Post was updated yaya');
+    }
+
+    // Function for the api, create new post
+    public function storeNewPostApi(Request $request) {
+        $incomingFields = $request->validate([
+            'title'=>'required',
+            'body'=>'required'
+        ]);
+
+          $incomingFields['title'] = strip_tags($incomingFields['title']);
+          $incomingFields['body'] = strip_tags($incomingFields['body']);
+          $incomingFields['user_id'] = auth()->id();
+  
+          //dont forget importing the class
+          $newPost = Post::create($incomingFields);
+  
+          //create to send emails
+          dispatch(new SendNewPostEmail(['sendTo'=>auth()->user()->email,'name'=>auth()->user()->username, 'title'=>$newPost->title]));
+             // no redirect, we return as is api and we use sanctum   
+          return $newPost->id;
+          
+      }
+
+      //delete api
+
+      public function deleteApi(Post $post){
+        //delete from here
+        $post->delete();
+        //in the example is user()->username...
+        return 'true';
     }
 
 }

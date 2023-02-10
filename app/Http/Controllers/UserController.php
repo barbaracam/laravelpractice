@@ -202,6 +202,21 @@ class UserController extends Controller
         return response()->json(['theHTML'=>view('profile-following-only', ['following'=>$usuario->followingTheseUsers()->latest()->get()])->render(),'docTitle'=>'Who ' . $usuario->username ." Follows" ]);      
     }
 
+    public function loginApi(Request $request){
+        $incomingFields = $request->validate([
+            'username' => 'required',
+            'password'=> 'required'
+        ]);
+        //check the method attempt, return true if the fields match a username and password
+        if(auth()->attempt($incomingFields)){
+            $user = User::where('username',$incomingFields['username'])->first();
+            //we can create a label token in thid case ourapptoken
+            $token = $user->createToken('ourapptoken')->plainTextToken;
+            return $token;
+        }
+        return "sorry";
+    }
+
 
         
    
