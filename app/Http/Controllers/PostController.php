@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Mail\NewPostEmail;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Jobs\SendNewPostEmail;
+use Illuminate\Support\Facades\Mail;
 
 class PostController extends Controller
 {
@@ -37,10 +40,15 @@ class PostController extends Controller
         $incomingFields['user_id'] = auth()->id();
 
         //dont forget importing the class
-        $newPost = Post::create($incomingFields); 
+        $newPost = Post::create($incomingFields);
+
+        dispatch(new SendNewPostEmail(['sendTo'=>auth()->user()->email,'name'=>auth()->user()->username, 'title'=>$newPost->title]));
+        
+        //we create this later, after the email blade
+        //im commenting this because it will become different process with jobs
+        // Mail::to(auth()->user()->email)->send(new NewPostEmail(['name'=>auth()->user()->username, 'title'=>$newPost->title]));        
 
         //we need to create a model because the system wont understand and send all the information from every field as a string without being separated
-        
         // we will redirect to the post that was created so we need to access the $newpPost than we keep in a variable        
         return redirect("/post/{$newPost->id}")->with('success', 'New post succefully created');
         

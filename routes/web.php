@@ -51,14 +51,15 @@ Route::get('/search/{surprise}', [PostController::class, "search"]);
 Route::get('/profile/{usuario:id}', [UserController::class, "profile"]);
 Route::get('/profile/{usuario:id}/followers', [UserController::class, "profileFollowers"]);
 Route::get('/profile/{usuario:id}/following', [UserController:: class, "profileFollowing"]);
+// Route::get('/profile/{user:username}', [UserController::class, "profile"]);
 
 //profile related routes with js spa, 
 //can be done with id instead of username, check also the layout.blade with id or username
+Route::middleware('cache.headers:public;max_age=20;etag')->group(function(){
 Route::get('/profile/{usuario:id}/raw', [UserController::class, "profileRaw"]);
 Route::get('/profile/{usuario:id}/followers/raw', [UserController::class, "profileFollowersRaw"]);
 Route::get('/profile/{usuario:id}/following/raw', [UserController:: class, "profileFollowingRaw"]);
-
-// Route::get('/profile/{user:username}', [UserController::class, "profile"]);
+});
 
 //follow relates routes
 Route::post('/create-follow/{user:id}',[FollowController::class, 'createFollow'])->middleware('MustBeLoggedIn');

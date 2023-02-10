@@ -175,7 +175,7 @@ class UserController extends Controller
     }
     //Profile Following SPA
     public function profileFollowingRaw(User $usuario) {
-        return response()->json(['theHTML'=>view('profile-following-only', ['following'=>$usuario->followingTheseUsers()->latest()->get()])->render(),'docTitle'=>'Who' . $usuario->username ."Follows" ]);      
+        return response()->json(['theHTML'=>view('profile-following-only', ['following'=>$usuario->followingTheseUsers()->latest()->get()])->render(),'docTitle'=>'Who ' . $usuario->username ." Follows" ]);      
     }
 
 
