@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Mail\RecapEmail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -15,6 +17,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        // lets schedule this email from recape, import model
+        $schedule->call(function() {
+           Mail::to('barbara.cam.dev@gmail.com')->send(new RecapEmail()); 
+        // })->everyMinute();
+        //run php artisan schedule:work and keep the terminal open to work
+        })->weekly();
+
         // $schedule->command('inspire')->hourly();
     }
 

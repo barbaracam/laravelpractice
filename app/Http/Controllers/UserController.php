@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use App\Models\User;
 use App\Models\Follow;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Facades\Image;
 use App\Events\OurExampleEventBarbara;
 use Illuminate\Support\Facades\Storage;
@@ -62,7 +64,29 @@ class UserController extends Controller
             //instance for the current model for the logged user, call the function from the user model, calling all post from the followers, paginate the number of post allow
             return view('homepage-feed',['posts'=> auth()->user()->feedPosts()->latest()->paginate(2)]);
         }else {
-            return view('homepage');
+            //cache we can use the post model put,has(check),get cache
+            // $postCount = Cache::put
+            //lets comment this to do a easier form
+
+            //if(Cache::has('postCount')){
+            //  $postCount = Cache::get('postCount');
+            //} else {                
+                //we create a variable with the post count, added in a cache
+                //store in the cache put first label or key of the data, second it is the actual value, 3 time
+             // sleep(5); dont do this is for checking only 
+            // $postCount = Post::count();                
+            // Cache::put('postCount', $postCount, 45);
+            //}
+
+            //easier way for cache, the 3 will be a function if it is not cache existing
+            $postCount = Cache::remember('postCount',45 ,function(){
+                sleep(5);
+                return Post::count();
+            });
+
+            // return view('homepage', ['postCount'=>Post::count()]);
+            //changed becase we want to change to dinamic way
+            return view('homepage', ['postCount'=>$postCount]);
         }
     }
     //function to logout
