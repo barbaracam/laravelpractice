@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel
            Mail::to('barbara.cam.dev@gmail.com')->send(new RecapEmail()); 
         // })->everyMinute();
         //run php artisan schedule:work and keep the terminal open to work
-        })->weekly();
+        })->everyMinute();
 
         // $schedule->command('inspire')->hourly();
     }
