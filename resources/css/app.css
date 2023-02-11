@@ -6,8 +6,8 @@ body,
 }
 
 .header-bar {
-  /* background-color: #f85084; */
-   background-color: #f9322c;
+  background-color: #f85084;
+   /* background-color: #f9322c; */
 }
 
 .container--narrow {
@@ -172,8 +172,8 @@ textarea.tall-textarea {
 }
 
 .search-overlay-icon {
-  /* color: #f85084; */
-  color: #f9322c;
+  color: #f85084;
+  /* color: #f9322c; */
   font-size: 1.4rem;
   margin: 0;
   margin-right: 10px;
@@ -185,8 +185,8 @@ textarea.tall-textarea {
   font-size: 1.1rem;
   outline: none;
   flex: 1;
-  /* color: #f85084 */
-  color:#f9322c;
+  color: #f85084
+  /* color:#f9322c; */
 }
 
 .live-search-results {
@@ -355,8 +355,8 @@ textarea.tall-textarea {
   text-align: right;
   padding: 4px 7px;
   border-radius: 12px;
-  /* background-color: #f85084; */
-  background-color: #f9322c; 
+  background-color: #f85084;
+  /* background-color: #f9322c;  */
   color: #fff;
 }
 
